@@ -1236,76 +1236,275 @@ body.large-font {
     gap: 20px;
 }
 
-/* 响应式设计 */
+/* 响应式设计 - 手机优先 */
 @media (max-width: 768px) {
-    .header h1 {
+    /* 基础样式 */
+    body {
         font-size: 28px;
     }
     
+    /* 头部样式 */
+    .header {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+    
+    /* 导航样式 */
+    .nav {
+        gap: 15px;
+    }
+    
     .nav-btn {
-        width: 120px;
-        height: 50px;
-        font-size: 20px;
+        width: 130px;
+        height: 70px;
+        font-size: 22px;
+        margin: 5px;
+    }
+    
+    .accessibility-controls {
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .access-btn {
+        width: 100px;
+        height: 55px;
+        font-size: 18px;
+    }
+    
+    /* 主要内容 */
+    .main-content {
+        padding: 15px;
+    }
+    
+    .section {
+        padding: 20px;
+    }
+    
+    /* 首页样式 */
+    .home-content h2 {
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .start-btn {
+        width: 200px;
+        height: 75px;
+        font-size: 28px;
+        margin: 25px 0;
     }
     
     .feature-cards {
         grid-template-columns: 1fr;
+        gap: 20px;
+        margin-top: 30px;
     }
     
+    .feature-card {
+        padding: 25px;
+    }
+    
+    .feature-card h3 {
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+    
+    /* 游戏选择 */
     .game-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
+    .game-card {
+        height: 200px;
+        padding: 25px;
+    }
+    
+    .game-card h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+    
+    .game-card p {
+        font-size: 22px;
+    }
+    
+    /* 游戏容器 */
     .game-header {
         flex-direction: column;
+        gap: 20px;
+        padding-bottom: 15px;
     }
     
+    #game-title {
+        font-size: 32px;
+        text-align: center;
+    }
+    
+    .game-controls {
+        justify-content: center;
+    }
+    
+    #difficulty-select {
+        height: 60px;
+        font-size: 24px;
+        padding: 0 15px;
+    }
+    
+    .back-btn,
+    .restart-btn {
+        width: 150px;
+        height: 60px;
+        font-size: 22px;
+    }
+    
+    /* 游戏区域 */
     .game-area {
-        padding: 15px;
+        padding: 20px;
+        min-height: 400px;
     }
     
+    /* 记忆力游戏 */
     .memory-game {
-        grid-template-columns: repeat(4, 80px);
-        gap: 15px;
+        grid-template-columns: repeat(4, 70px);
+        gap: 12px;
     }
     
     .memory-card {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
         font-size: 28px;
     }
     
+    /* 数独游戏 */
+    .sudoku-region {
+        grid-template-columns: repeat(3, 50px);
+        grid-template-rows: repeat(3, 50px);
+    }
+    
+    .sudoku-cell {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    /* 点击游戏和注意力游戏 */
     .click-game,
     .attention-game {
         width: 100%;
-        height: 300px;
+        height: 280px;
     }
     
+    /* 计算游戏 */
     .calculation-question {
         font-size: 36px;
+        margin-bottom: 30px;
     }
     
     .calculation-options {
         grid-template-columns: 1fr;
+        gap: 15px;
+        max-width: 300px;
+        margin: 0 auto 20px;
     }
     
+    .calculation-option {
+        height: 70px;
+        font-size: 28px;
+    }
+    
+    /* 序列记忆游戏 */
+    .seqmemory-board {
+        padding: 20px;
+        grid-template-columns: repeat(3, 70px);
+        grid-template-rows: repeat(3, 70px);
+        gap: 12px;
+    }
+    
+    .seqmemory-button {
+        width: 70px;
+        height: 70px;
+        font-size: 28px;
+    }
+    
+    .seqmemory-btn {
+        width: 180px;
+        height: 65px;
+        font-size: 26px;
+    }
+    
+    /* 反应测试游戏 */
+    .reaction-target {
+        width: 250px;
+        height: 250px;
+    }
+    
+    #reaction-text {
+        font-size: 26px;
+    }
+    
+    /* 颜色词测试游戏 */
     .colorword-word {
         font-size: 56px;
-        min-width: 300px;
+        min-width: 280px;
+        padding: 20px 40px;
     }
     
     .colorword-btn {
         width: 120px;
         height: 70px;
         font-size: 28px;
+        margin: 8px;
     }
     
-    .reaction-target {
-        width: 300px;
-        height: 300px;
+    /* 游戏统计 */
+    .game-stats {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+        max-width: 100%;
     }
     
-    #reaction-text {
+    /* 个人记录 */
+    .record-stats {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .stat-item {
+        padding: 25px;
+        min-width: 200px;
+    }
+    
+    .stat-value {
+        font-size: 32px;
+    }
+    
+    /* 帮助中心 */
+    .help-content {
+        text-align: left;
+    }
+    
+    .help-content h3 {
         font-size: 28px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    
+    .help-content p {
+        font-size: 22px;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+    
+    /* 进度图表 */
+    #progress-canvas {
+        width: 100%;
+        max-width: 350px;
+        height: auto;
     }
 }
