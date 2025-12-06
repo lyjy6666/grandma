@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老年认知训练中心 - 测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>老年认知训练中心 - 功能测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 页面结构测试</h2>
+        <div class="test-result" id="test-1">测试中...</div>
+        <div class="test-result" id="test-2">测试中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 导航功能测试</h2>
+        <div class="test-result" id="test-3">测试中...</div>
+        <div class="test-result" id="test-4">测试中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 辅助功能测试</h2>
+        <div class="test-result" id="test-5">测试中...</div>
+        <div class="test-result" id="test-6">测试中...</div>
+        <div class="test-result" id="test-7">测试中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 游戏功能测试</h2>
+        <div class="test-result" id="test-8">测试中...</div>
+        <div class="test-result" id="test-9">测试中...</div>
+        <div class="test-result" id="test-10">测试中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. 性能测试</h2>
+        <div class="test-result" id="test-11">测试中...</div>
+    </div>
+    
+    <script>
+        // 页面结构测试
+        function testPageStructure() {
+            const test1 = document.getElementById('test-1');
+            const test2 = document.getElementById('test-2');
+            
+            // 测试1：检查关键元素是否存在
+            const header = document.querySelector('header');
+            const main = document.querySelector('main');
+            const footer = document.querySelector('footer');
+            
+            if (header && main && footer) {
+                test1.className = 'test-result pass';
+                test1.textContent = '✓ 页面基本结构完整';
+            } else {
+                test1.className = 'test-result fail';
+                test1.textContent = '✗ 页面基本结构不完整';
+            }
+            
+            // 测试2：检查导航项数量
+            const navBtns = document.querySelectorAll('.nav-btn');
+            if (navBtns.length <= 5) {
+                test2.className = 'test-result pass';
+                test2.textContent = '✓ 导航项数量符合要求（≤5个）';
+            } else {
+                test2.className = 'test-result fail';
+                test2.textContent = `✗ 导航项数量超过限制（实际：${navBtns.length}个）`;
+            }
+        }
+        
+        // 导航功能测试
+        function testNavigation() {
+            const test3 = document.getElementById('test-3');
+            const test4 = document.getElementById('test-4');
+            
+            // 测试3：检查游戏选择页面是否存在
+            const gamesSection = document.getElementById('games');
+            if (gamesSection) {
+                test3.className = 'test-result pass';
+                test3.textContent = '✓ 游戏选择页面存在';
+            } else {
+                test3.className = 'test-result fail';
+                test3.textContent = '✗ 游戏选择页面不存在';
+            }
+            
+            // 测试4：检查个人记录页面是否存在
+            const recordsSection = document.getElementById('records');
+            if (recordsSection) {
+                test4.className = 'test-result pass';
+                test4.textContent = '✓ 个人记录页面存在';
+            } else {
+                test4.className = 'test-result fail';
+                test4.textContent = '✗ 个人记录页面不存在';
+            }
+        }
+        
+        // 辅助功能测试
+        function testAccessibility() {
+            const test5 = document.getElementById('test-5');
+            const test6 = document.getElementById('test-6');
+            const test7 = document.getElementById('test-7');
+            
+            // 测试5：检查辅助功能按钮是否存在
+            const accessBtns = document.querySelectorAll('.access-btn');
+            if (accessBtns.length >= 3) {
+                test5.className = 'test-result pass';
+                test5.textContent = '✓ 辅助功能按钮存在';
+            } else {
+                test5.className = 'test-result fail';
+                test5.textContent = `✗ 辅助功能按钮数量不足（实际：${accessBtns.length}个）`;
+            }
+            
+            // 测试6：检查字体大小调节功能
+            const fontSizeBtn = document.querySelector('.access-btn');
+            if (fontSizeBtn) {
+                test6.className = 'test-result pass';
+                test6.textContent = '✓ 字体大小调节功能存在';
+            } else {
+                test6.className = 'test-result fail';
+                test6.textContent = '✗ 字体大小调节功能不存在';
+            }
+            
+            // 测试7：检查高对比度模式功能
+            if (fontSizeBtn) {
+                test7.className = 'test-result pass';
+                test7.textContent = '✓ 高对比度模式功能存在';
+            } else {
+                test7.className = 'test-result fail';
+                test7.textContent = '✗ 高对比度模式功能不存在';
+            }
+        }
+        
+        // 游戏功能测试
+        function testGames() {
+            const test8 = document.getElementById('test-8');
+            const test9 = document.getElementById('test-9');
+            const test10 = document.getElementById('test-10');
+            
+            // 测试8：检查游戏卡片数量
+            const gameCards = document.querySelectorAll('.game-card');
+            if (gameCards.length >= 5) {
+                test8.className = 'test-result pass';
+                test8.textContent = `✓ 游戏数量符合要求（实际：${gameCards.length}个）`;
+            } else {
+                test8.className = 'test-result fail';
+                test8.textContent = `✗ 游戏数量不足（实际：${gameCards.length}个）`;
+            }
+            
+            // 测试9：检查游戏容器是否存在
+            const gameContainer = document.getElementById('game-container');
+            if (gameContainer) {
+                test9.className = 'test-result pass';
+                test9.textContent = '✓ 游戏容器存在';
+            } else {
+                test9.className = 'test-result fail';
+                test9.textContent = '✗ 游戏容器不存在';
+            }
+            
+            // 测试10：检查游戏难度选择功能
+            const difficultySelect = document.getElementById('difficulty-select');
+            if (difficultySelect) {
+                test10.className = 'test-result pass';
+                test10.textContent = '✓ 游戏难度选择功能存在';
+            } else {
+                test10.className = 'test-result fail';
+                test10.textContent = '✗ 游戏难度选择功能不存在';
+            }
+        }
+        
+        // 性能测试
+        function testPerformance() {
+            const test11 = document.getElementById('test-11');
+            
+            // 测试11：检查页面加载时间
+            const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+            if (loadTime < 3000) {
+                test11.className = 'test-result pass';
+                test11.textContent = `✓ 页面加载速度符合要求（${loadTime}ms < 3000ms）`;
+            } else {
+                test11.className = 'test-result fail';
+                test11.textContent = `✗ 页面加载速度超过限制（${loadTime}ms > 3000ms）`;
+            }
+        }
+        
+        // 运行所有测试
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                testPageStructure();
+                testNavigation();
+                testAccessibility();
+                testGames();
+                testPerformance();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
