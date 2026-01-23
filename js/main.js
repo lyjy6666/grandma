@@ -1,96 +1,176 @@
 // 全局变量
-let currentSection = 'home';
+let currentSection = 'games';
 let gameStartTime = null;
 let gameTimer = null;
 let gameScore = 0;
 let currentGame = null;
 let difficulty = 1;
-let soundEnabled = true;
 
-// 更新个人记录显示
+// 更新今日训练记录显示
 function updateRecords() {
-    const totalStats = JSON.parse(localStorage.getItem('totalStats')) || {
-        totalTime: 0,
-        completedGames: 0,
-        highScore: 0
-    };
-    
-    // 更新总游戏时长
-    const totalTimeMinutes = Math.floor(totalStats.totalTime / 60);
-    document.getElementById('total-time').textContent = totalTimeMinutes + '分钟';
-    
-    // 更新完成游戏次数
-    document.getElementById('completed-games').textContent = totalStats.completedGames + '次';
-    
-    // 更新最高分数
-    document.getElementById('high-score').textContent = totalStats.highScore + '分';
-    
-    // 更新最近7天进度图表
-    updateProgressChart();
+    // 更新今日训练数据
+    updateDailyStats();
 }
 
-// 更新进度图表
-function updateProgressChart() {
+// 更新今日训练数据
+function updateDailyStats() {
     const gameData = JSON.parse(localStorage.getItem('gameData')) || [];
-    const ctx = document.getElementById('progress-canvas').getContext('2d');
+    const today = new Date().toDateString();
     
-    // 清除画布
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // 筛选今日数据
+    const todayData = gameData.filter(game => game.day === today);
     
-    // 准备数据
-    const last7Days = [];
-    const today = new Date();
+    const dailyStatsDiv = document.getElementById('daily-stats');
     
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toDateString();
-        
-        // 统计当天的游戏次数
-        const dayGames = gameData.filter(game => game.day === dateStr);
-        last7Days.push({
-            date: dateStr,
-            games: dayGames.length
-        });
+    if (todayData.length === 0) {
+        dailyStatsDiv.innerHTML = '<p>今日还没有进行任何训练</p>';
+        return;
     }
     
-    // 绘制简单图表
-    ctx.fillStyle = '#4CAF50';
-    ctx.strokeStyle = '#388e3c';
-    ctx.lineWidth = 3;
+    // 汇总数据
+    let dailyHtml = `<h4>今日训练记录（${todayData.length}次游戏）</h4>`;
     
-    const chartWidth = ctx.canvas.width - 80;
-    const chartHeight = ctx.canvas.height - 60;
-    const barWidth = chartWidth / 7 - 10;
-    const maxGames = Math.max(...last7Days.map(day => day.games), 1);
-    
-    // 绘制柱状图
-    last7Days.forEach((day, index) => {
-        const barHeight = (day.games / maxGames) * chartHeight;
-        const x = 40 + index * (barWidth + 10);
-        const y = ctx.canvas.height - 30 - barHeight;
+    todayData.forEach((game, index) => {
+        const gameNameMap = {
+            'memory': '记忆力训练',
+            'click': '点击训练',
+            'attention': '注意力训练',
+            'seqmemory': '序列记忆',
+            'reaction': '反应测试',
+            'colorword': '颜色词测试'
+        };
         
-        // 绘制柱子
-        ctx.fillRect(x, y, barWidth, barHeight);
+        const gameName = gameNameMap[game.gameType] || game.gameType;
+        const gameDate = new Date(game.date).toLocaleTimeString();
         
-        // 绘制日期标签
-        ctx.fillStyle = '#666';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(day.date.split(' ')[2], x + barWidth / 2, ctx.canvas.height - 10);
-        
-        // 绘制游戏次数
-        ctx.fillStyle = '#333';
-        ctx.fillText(day.games, x + barWidth / 2, y - 10);
-        
-        ctx.fillStyle = '#4CAF50';
+        dailyHtml += `
+            <div style="margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                <p><strong>${index + 1}. ${gameName}</strong></p>
+                <p>时间: ${gameDate}</p>
+                <p>得分: ${game.score}分</p>
+                <p>用时: ${game.time}秒</p>
+            </div>
+        `;
     });
+    
+    dailyStatsDiv.innerHTML = dailyHtml;
 }
+
+// 导出今日训练数据为图片
+function exportDailyStats() {
+    const gameData = JSON.parse(localStorage.getItem('gameData')) || [];
+    const today = new Date().toDateString();
+    
+    // 筛选今日数据
+    const todayData = gameData.filter(game => game.day === today);
+    
+    if (todayData.length === 0) {
+        alert('今日还没有进行任何训练，无法导出数据！');
+        return;
+    }
+    
+    // 创建Canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 设置Canvas尺寸
+    const width = 800;
+    const height = 600 + todayData.length * 120;
+    canvas.width = width;
+    canvas.height = height;
+    
+    // 绘制背景
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    
+    // 绘制标题
+    ctx.fillStyle = '#4CAF50';
+    ctx.font = 'bold 36px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('今日训练汇总', width / 2, 60);
+    
+    // 绘制日期
+    ctx.fillStyle = '#666666';
+    ctx.font = '20px Arial';
+    ctx.fillText(today, width / 2, 100);
+    
+    // 绘制游戏数据
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.textAlign = 'left';
+    let yPos = 150;
+    
+    const gameNameMap = {
+        'memory': '记忆力训练',
+        'click': '点击训练',
+        'attention': '注意力训练',
+        'seqmemory': '序列记忆',
+        'reaction': '反应测试',
+        'colorword': '颜色词测试'
+    };
+    
+    todayData.forEach((game, index) => {
+        const gameName = gameNameMap[game.gameType] || game.gameType;
+        const gameDate = new Date(game.date).toLocaleTimeString();
+        
+        // 绘制游戏标题
+        ctx.fillStyle = '#4CAF50';
+        ctx.font = 'bold 24px Arial';
+        ctx.fillText(`${index + 1}. ${gameName}`, 50, yPos);
+        
+        // 绘制游戏详情
+        ctx.fillStyle = '#333333';
+        ctx.font = '20px Arial';
+        ctx.fillText(`时间: ${gameDate}`, 50, yPos + 30);
+        ctx.fillText(`得分: ${game.score}分`, 50, yPos + 60);
+        ctx.fillText(`用时: ${game.time}秒`, 50, yPos + 90);
+        
+        // 绘制分隔线
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(50, yPos + 110);
+        ctx.lineTo(width - 50, yPos + 110);
+        ctx.stroke();
+        
+        yPos += 140;
+    });
+    
+    // 绘制总览信息
+    const totalScore = todayData.reduce((sum, game) => sum + game.score, 0);
+    const totalTime = todayData.reduce((sum, game) => sum + game.time, 0);
+    const avgScore = Math.round(totalScore / todayData.length);
+    
+    ctx.fillStyle = '#2196F3';
+    ctx.font = 'bold 28px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('总览', width / 2, yPos + 40);
+    
+    ctx.fillStyle = '#333333';
+    ctx.font = '24px Arial';
+    ctx.fillText(`总游戏次数: ${todayData.length}次`, width / 2, yPos + 80);
+    ctx.fillText(`总得分: ${totalScore}分`, width / 2, yPos + 120);
+    ctx.fillText(`平均得分: ${avgScore}分`, width / 2, yPos + 160);
+    ctx.fillText(`总用时: ${totalTime}秒`, width / 2, yPos + 200);
+    
+    // 绘制页脚
+    ctx.fillStyle = '#999999';
+    ctx.font = '16px Arial';
+    ctx.fillText('给奶奶的训练题', width / 2, yPos + 250);
+    
+    // 创建下载链接
+    const link = document.createElement('a');
+    link.download = `今日训练汇总_${today.replace(/\s+/g, '_')}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+
 
 // 页面加载完成后初始化
 window.addEventListener('load', function() {
-    // 显示默认页面
-    showSection('home');
+    // 直接显示游戏选择页面
+    showSection('games');
     
     // 更新个人记录
     updateRecords();
@@ -117,6 +197,18 @@ function showSection(sectionId) {
         if (sectionId === 'records') {
             updateRecords();
         }
+        // 如果是游戏选择页面，恢复导航按钮的正常状态
+        if (sectionId === 'games') {
+            const gameSelectBtn = document.querySelector('.nav-btn[onclick="showSection(\'games\')"]');
+            const recordsBtn = document.querySelector('.nav-btn[onclick="showSection(\'records\')"]');
+            
+            if (gameSelectBtn) {
+                gameSelectBtn.classList.remove('zoom');
+            }
+            if (recordsBtn) {
+                recordsBtn.style.display = 'block';
+            }
+        }
     }
     
     // 隐藏游戏容器
@@ -135,6 +227,17 @@ function showGameSection(gameId) {
     // 显示游戏容器
     const gameContainer = document.getElementById('game-container');
     gameContainer.classList.add('active');
+    
+    // 处理导航按钮
+    const gameSelectBtn = document.querySelector('.nav-btn[onclick="showSection(\'games\')"]');
+    const recordsBtn = document.querySelector('.nav-btn[onclick="showSection(\'records\')"]');
+    
+    if (gameSelectBtn) {
+        gameSelectBtn.classList.add('zoom');
+    }
+    if (recordsBtn) {
+        recordsBtn.style.display = 'none';
+    }
     
     currentGame = gameId;
     
@@ -160,9 +263,7 @@ function initGame() {
         case 'attention':
             initAttentionGame();
             break;
-        case 'calculation':
-            initCalculationGame();
-            break;
+
 
         case 'seqmemory':
             initSeqmemoryGame();
@@ -210,27 +311,7 @@ function initAttentionGame() {
     // 这里将在后续实现完整的游戏逻辑
 }
 
-// 计算训练游戏初始化
-function initCalculationGame() {
-    const gameArea = document.getElementById('game-area');
-    gameArea.innerHTML = '<h2>计算训练</h2><p>快速计算出正确答案！</p>';
-    // 这里将在后续实现完整的游戏逻辑
-}
 
-// 切换字体大小
-function toggleFontSize() {
-    document.body.classList.toggle('large-font');
-}
-
-// 切换高对比度模式
-function toggleHighContrast() {
-    document.body.classList.toggle('high-contrast');
-}
-
-// 切换声音开关
-function toggleSound() {
-    soundEnabled = !soundEnabled;
-}
 
 // 显示使用时长提醒
 function showReminder() {
@@ -259,8 +340,7 @@ function initMemoryGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '记忆力训练';
+
     
     const memoryGame = document.getElementById('memory-game');
     memoryGame.innerHTML = '';
@@ -378,8 +458,7 @@ function initSudokuGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '简易数独';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -610,8 +689,7 @@ function initClickGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '点击训练';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -721,8 +799,7 @@ function initAttentionGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '注意力训练';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -761,9 +838,50 @@ function initAttentionGame() {
         currentRound++;
         attentionGame.innerHTML = '';
         
-        // 生成颜色
-        const baseColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
-        const targetColor = `hsl(${(Math.random() * 360 + 180) % 360}, 70%, 60%)`;
+        // 生成颜色（差异适中）
+        const baseHue = Math.random() * 360;
+        const baseSaturation = 60 + Math.random() * 20;
+        const baseLightness = 55 + Math.random() * 10;
+        
+        // 基础颜色
+        const baseColor = `hsl(${baseHue}, ${baseSaturation}%, ${baseLightness}%)`;
+        
+        // 目标颜色：与基础颜色有明显但不过分的差异
+        // 随机选择差异类型：色相、饱和度或亮度
+        const diffType = Math.floor(Math.random() * 3);
+        
+        let targetHue = baseHue;
+        let targetSaturation = baseSaturation;
+        let targetLightness = baseLightness;
+        
+        switch(diffType) {
+            case 0: // 色相差异
+                // 色相差异控制在20-40度之间
+                const hueDiff = 20 + Math.random() * 20;
+                targetHue = (baseHue + (Math.random() > 0.5 ? hueDiff : -hueDiff)) % 360;
+                if (targetHue < 0) targetHue += 360;
+                break;
+            case 1: // 饱和度差异
+                // 饱和度差异控制在15-25%之间
+                const satDiff = 15 + Math.random() * 10;
+                targetSaturation = Math.max(40, Math.min(80, baseSaturation + (Math.random() > 0.5 ? satDiff : -satDiff)));
+                break;
+            case 2: // 亮度差异
+                // 亮度差异控制在12-20%之间
+                const lightDiff = 12 + Math.random() * 8;
+                targetLightness = Math.max(40, Math.min(70, baseLightness + (Math.random() > 0.5 ? lightDiff : -lightDiff)));
+                break;
+        }
+        
+        // 确保至少有一个参数有明显差异
+        if (Math.abs(targetHue - baseHue) < 10 && 
+            Math.abs(targetSaturation - baseSaturation) < 10 && 
+            Math.abs(targetLightness - baseLightness) < 8) {
+            // 如果差异太小，强制增加亮度差异
+            targetLightness = Math.max(40, Math.min(70, baseLightness + (Math.random() > 0.5 ? 15 : -15)));
+        }
+        
+        const targetColor = `hsl(${targetHue}, ${targetSaturation}%, ${targetLightness}%)`;
         
         // 随机选择目标位置
         const targetIndex = Math.floor(Math.random() * objectCount);
@@ -827,148 +945,7 @@ function initAttentionGame() {
     }
 }
 
-// 计算训练游戏实现
-function initCalculationGame() {
-    const gameArea = document.getElementById('game-area');
-    gameArea.innerHTML = `
-        <h2>计算训练</h2>
-        <div id="calculation-game" class="calculation-game">
-            <!-- 游戏内容将通过JavaScript动态生成 -->
-        </div>
-    `;
-    
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '计算训练';
-    
-    // 重置游戏状态
-    gameScore = 0;
-    document.getElementById('game-score').textContent = gameScore;
-    gameStartTime = Date.now();
-    updateGameTime();
-    
-    const calculationGame = document.getElementById('calculation-game');
-    calculationGame.innerHTML = '';
-    
-    // 游戏设置
-    const gameRounds = 15; // 游戏轮数
-    let currentRound = 0;
-    
-    // 开始游戏
-    generateQuestion();
-    
-    function generateQuestion() {
-        if (currentRound >= gameRounds) {
-            // 游戏结束
-            endGame();
-            return;
-        }
-        
-        currentRound++;
-        calculationGame.innerHTML = '';
-        
-        // 根据难度调整运算类型和数字范围
-        let num1, num2, operator, answer;
-        
-        // 运算类型
-        const operators = ['+', '-', '*', '/'];
-        
-        if (difficulty === 1) {
-            // 简单：只做加法和减法，数字较小
-            operator = operators[Math.floor(Math.random() * 2)];
-            num1 = Math.floor(Math.random() * 10) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
-        } else if (difficulty === 2) {
-            // 中等：包含乘法和除法，数字适中
-            operator = operators[Math.floor(Math.random() * 3)];
-            num1 = Math.floor(Math.random() * 20) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
-        } else {
-            // 困难：包含所有运算，数字较大
-            operator = operators[Math.floor(Math.random() * 4)];
-            num1 = Math.floor(Math.random() * 30) + 1;
-            num2 = Math.floor(Math.random() * 15) + 1;
-        }
-        
-        // 确保减法结果为正数
-        if (operator === '-') {
-            num1 = Math.max(num1, num2);
-            answer = num1 - num2;
-        } 
-        // 确保除法结果为整数
-        else if (operator === '/') {
-            num1 = num2 * Math.floor(Math.random() * 10) + num2;
-            answer = num1 / num2;
-        } 
-        else if (operator === '+') {
-            answer = num1 + num2;
-        } 
-        else if (operator === '*') {
-            answer = num1 * num2;
-        }
-        
-        // 生成选项
-        const options = [answer];
-        
-        // 生成干扰项
-        while (options.length < 4) {
-            let distractor;
-            const range = difficulty * 5;
-            distractor = Math.floor(answer + (Math.random() - 0.5) * range * 2);
-            
-            // 确保干扰项为整数且不重复
-            distractor = Math.round(distractor);
-            if (!options.includes(distractor)) {
-                options.push(distractor);
-            }
-        }
-        
-        // 打乱选项顺序
-        for (let i = options.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [options[i], options[j]] = [options[j], options[i]];
-        }
-        
-        // 创建题目
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'calculation-question';
-        questionDiv.textContent = `${num1} ${operator} ${num2} = ?`;
-        calculationGame.appendChild(questionDiv);
-        
-        // 创建选项
-        const optionsDiv = document.createElement('div');
-        optionsDiv.className = 'calculation-options';
-        
-        options.forEach(option => {
-            const optionBtn = document.createElement('button');
-            optionBtn.className = 'calculation-option';
-            optionBtn.textContent = option;
-            optionBtn.dataset.answer = option;
-            
-            optionBtn.addEventListener('click', () => {
-                if (parseFloat(optionBtn.dataset.answer) === answer) {
-                    // 正确答案
-                    optionBtn.classList.add('correct');
-                    gameScore += 10;
-                    document.getElementById('game-score').textContent = gameScore;
-                    showFeedback('回答正确！', true);
-                } else {
-                    // 错误答案
-                    optionBtn.classList.add('incorrect');
-                    gameScore -= 5;
-                    document.getElementById('game-score').textContent = gameScore;
-                    showFeedback('再试一次！', false);
-                }
-                
-                // 1秒后生成下一题
-                setTimeout(generateQuestion, 1000);
-            });
-            
-            optionsDiv.appendChild(optionBtn);
-        });
-        
-        calculationGame.appendChild(optionsDiv);
-    }
-}
+
 
 
 
@@ -991,8 +968,7 @@ function initSeqmemoryGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '序列记忆';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -1117,8 +1093,7 @@ function initReactionGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '反应测试';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -1206,8 +1181,7 @@ function initColorwordGame() {
         </div>
     `;
     
-    const gameTitle = document.getElementById('game-title');
-    gameTitle.textContent = '颜色词测试';
+
     
     // 重置游戏状态
     gameScore = 0;
@@ -1356,7 +1330,6 @@ function showGameResult(score, time) {
         <div style="text-align: center; margin: 30px 0;">
             <p>最终得分: <strong>${score}</strong></p>
             <p>用时: <strong>${time}秒</strong></p>
-            <button onclick="showSection('games')" class="nav-btn" style="margin: 20px;">返回游戏选择</button>
         </div>
     `;
 }

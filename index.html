@@ -11,128 +11,53 @@
     <header class="header">
         <h1>给奶奶的训练题</h1>
         <nav class="nav">
-            <button class="nav-btn" onclick="showSection('home')">首页</button>
             <button class="nav-btn" onclick="showSection('games')">游戏选择</button>
             <button class="nav-btn" onclick="showSection('records')">个人记录</button>
-            <button class="nav-btn" onclick="showSection('help')">帮助中心</button>
         </nav>
-        <div class="accessibility-controls">
-            <button class="access-btn" onclick="toggleFontSize()">字体大小</button>
-            <button class="access-btn" onclick="toggleHighContrast()">高对比度</button>
-            <button class="access-btn" onclick="toggleSound()">声音开关</button>
-        </div>
     </header>
 
     <main class="main-content">
-        <!-- 首页 -->
-        <section id="home" class="section active">
-            <div class="home-content">
-                <h2>欢迎来到认知训练中心</h2>
-                <p>通过有趣的游戏，锻炼您的大脑，保持思维敏捷！</p>
-                <button class="start-btn" onclick="showSection('games')">开始游戏</button>
-                <div class="feature-cards">
-                    <div class="feature-card">
-                        <h3>多种游戏类型</h3>
-                        <p>记忆力、逻辑思维、手眼协调等多种训练</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>循序渐进</h3>
-                        <p>从简单到复杂，适合不同水平的用户</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>记录进步</h3>
-                        <p>追踪您的游戏数据，见证成长</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- 游戏选择 -->
-        <section id="games" class="section">
+        <section id="games" class="section active">
             <h2>选择游戏</h2>
             <div class="game-grid">
                 <div class="game-card" onclick="showGameSection('memory')">
                     <h3>记忆力训练</h3>
-                    <p>记住数字或图案的位置</p>
                 </div>
                 <div class="game-card" onclick="showGameSection('click')">
                     <h3>点击训练</h3>
-                    <p>提高手眼协调能力</p>
                 </div>
                 <div class="game-card" onclick="showGameSection('attention')">
                     <h3>注意力训练</h3>
-                    <p>集中注意力，完成任务</p>
                 </div>
-                <div class="game-card" onclick="showGameSection('calculation')">
-                    <h3>计算训练</h3>
-                    <p>简单数学运算，保持思维活跃</p>
-                </div>
-                        </div>
+                
                 <div class="game-card" onclick="showGameSection('seqmemory')">
                     <h3>序列记忆</h3>
-                    <p>记住并重复显示的序列</p>
                 </div>
                 <div class="game-card" onclick="showGameSection('reaction')">
                     <h3>反应测试</h3>
-                    <p>测试你的反应速度</p>
                 </div>
                 <div class="game-card" onclick="showGameSection('colorword')">
                     <h3>颜色词测试</h3>
-                    <p>说出文字颜色，忽略文字内容</p>
                 </div>
             </div>
         </section>
 
         <!-- 个人记录 -->
         <section id="records" class="section">
-            <h2>个人记录</h2>
+            <h2>今日训练</h2>
             <div class="records-content">
-                <div class="record-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">总游戏时长</span>
-                        <span class="stat-value" id="total-time">0分钟</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">完成游戏</span>
-                        <span class="stat-value" id="completed-games">0次</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">最高分数</span>
-                        <span class="stat-value" id="high-score">0分</span>
-                    </div>
+                <div class="daily-summary">
+                    <h3>今日训练汇总</h3>
+                    <div id="daily-stats"></div>
+                    <button id="export-btn" class="nav-btn" onclick="exportDailyStats()">导出今日训练</button>
                 </div>
-                <div class="progress-chart">
-                    <h3>最近7天进度</h3>
-                    <canvas id="progress-canvas" width="400" height="200"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- 帮助中心 -->
-        <section id="help" class="section">
-            <h2>帮助中心</h2>
-            <div class="help-content">
-                <h3>如何开始游戏？</h3>
-                <p>1. 点击顶部导航栏的"游戏选择"</p>
-                <p>2. 选择您想玩的游戏</p>
-                <p>3. 按照游戏指引开始游戏</p>
-                
-                <h3>游戏难度说明</h3>
-                <p>每个游戏都有3-5个难度等级，从简单到复杂。您可以根据自己的能力选择合适的难度。</p>
-                
-                <h3>辅助功能</h3>
-                <p>页面右上角提供了字体大小调节、高对比度模式和声音开关功能，您可以根据需要进行调整。</p>
-                
-                <h3>联系我们</h3>
-                <p>如果您在使用过程中遇到问题，请联系客服：400-123-4567</p>
             </div>
         </section>
 
         <!-- 游戏容器 -->
         <section id="game-container" class="section">
             <div class="game-header">
-                <button class="back-btn" onclick="showSection('games')">返回游戏选择</button>
-                <h2 id="game-title">游戏标题</h2>
                 <div class="game-controls">
                     <select id="difficulty-select" onchange="changeDifficulty()">
                         <option value="1">简单</option>
